@@ -25,7 +25,7 @@ Create some Basic Image Processing Functions
 
 ### GUI Support
 #### Using Graphical User Interface (Recommended for UX)
-Compile Code using ```GUI_MAIN.java``` as Main
+Compile Code using ```ImageProcessing.java``` as Main
 
 #### Using Comand Line (Recommended for Testing)
-Compile Code using ```TERMINAL_MAIN.java``` as Main
+Compile Code using ```ImageProcessing2.java``` as Main
