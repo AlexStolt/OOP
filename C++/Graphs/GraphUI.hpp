@@ -2,11 +2,7 @@
 #ifndef _GRAPH_UI_
 #define _GRAPH_UI_
 
-
-
 using namespace std;
-
-
 
 template <typename T>
 int graphUI() {
@@ -85,7 +81,10 @@ int graphUI() {
 
     }
     else if(!option.compare("dot")) {
-      
+      getline(std::cin, line);
+      stream << line;
+
+      graph.print2DotFile(stream.str().c_str());
     }
     else if(!option.compare("bfs")) {
       long unsigned int i = 0;

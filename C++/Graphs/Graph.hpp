@@ -9,6 +9,8 @@
 #include <stack>
 #include <set>
 #include <algorithm>
+#include <ostream>
+#include <fstream>
 
 using namespace std;
 
@@ -137,8 +139,9 @@ class Graph {
       directed_graph = directed;
     }
 
+    //Destructor to Deallocate Memory
     ~Graph(){
-      
+      //Nothing to Destroy
     }
 
     //Find a Certain Node in Graph 
@@ -243,7 +246,7 @@ class Graph {
     }
 
     //Implementation of DFS Algorithm
-    list<T> dfs(const T& info) const {
+    std::list<T> dfs(const T& info) const {
       std::stack<struct GraphVertex> stack;
       struct GraphVertex vertex, edge_destination_vertex;
       std::list <T> dfs_path;
@@ -300,9 +303,8 @@ class Graph {
       return dfs_path;
     }
     
-
     //Implementation of BFS Algorithm
-    list<T> bfs(const T& info) const {
+    std::list<T> bfs(const T& info) const {
       std::queue<struct GraphVertex> queue;
       struct GraphVertex vertex, edge_destination_vertex;
       std::list <T> bfs_path;
@@ -360,7 +362,7 @@ class Graph {
     }
 
     //Implementation of MST
-    list<GraphEdge<T>> mst(){
+    std::list<GraphEdge<T>> mst(){
       std::list<GraphEdge<T>> mst_path; //Path of MST Traversal
       std::vector<GraphEdge<T>> edges_set;
       struct GraphVertex vertex;
@@ -462,7 +464,39 @@ class Graph {
       return mst_path;
     }
     
-    void print2DotFile(const char *filename) const;
+    //Create a Dot File of the Graph
+    void print2DotFile(const char *filename) const {
+      ofstream dot_file;
+
+      //Empty Graph
+      if(!vertices_list.size()){
+        return;
+      }
+
+      //Open File to Write
+      dot_file.open(filename);
+
+      if(!directed_graph){
+        dot_file << "graph ";
+      }
+      else {
+        dot_file << "digraph ";
+      }
+
+      dot_file << "{" << endl;
+    
+      //Write Edges on File
+      for(long unsigned int i = 0; i < vertices_list.size(); i++){
+        for(long unsigned int j = 0; j < vertices_list[i].edges_list.size(); j++){
+          dot_file << "    " << vertices_list[i].edges_list[j].from << " -- " << vertices_list[i].edges_list[j].to << endl;
+        }
+      }
+
+      dot_file << "}" << endl;
+
+      //Close File
+      dot_file.close();
+    }
 
     //Implementation of Dijkstra's Algorithm
     std::list<T> dijkstra(const T& from, const T& to) {
