@@ -1,4 +1,6 @@
 # AVL Tree
+## Functionality
+Implementation of an AVL Tree with all the Necessary Functionality (Insertion, Deletion, Search and Visualization)
 ## Compile
 ```make```
 ## Run Tests and Compare Results
