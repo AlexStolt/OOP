@@ -30,10 +30,10 @@ public class ContentPanel extends JPanel {
         ImageIcon icon = null;
 
         //Get Directories
-        File[] directories = GlobalFrame.get_directories(GlobalFrame.path, GlobalFrame.hidden_content);
+        File[] directories = GlobalFrame.get_directories(GlobalFrame.path, GeneralContainerPanel.hidden_content);
 
         //Get Files
-        File[] files = GlobalFrame.get_files(GlobalFrame.path,  GlobalFrame.hidden_content);
+        File[] files = GlobalFrame.get_files(GlobalFrame.path,  GeneralContainerPanel.hidden_content);
 
         GlobalFrame.sort(directories);
 
@@ -111,6 +111,17 @@ public class ContentPanel extends JPanel {
 
                     //No Components are Selected
                     GlobalFrame.selected_label = null;
+                }
+
+                //Right Click
+                if(event.getButton() == MouseEvent.BUTTON3){
+                    //Handle Paste Option (Disable or Enable)
+                    MenuContainer.paste_option(GlobalFrame.path);
+
+                    //Pop-Up Menu
+                    MenuPopUp popup = new MenuPopUp();
+                    add(popup);
+                    popup.show(self, event.getX(), event.getY());
                 }
             }
         });

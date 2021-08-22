@@ -2,6 +2,7 @@ package ce326.hw3;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +26,7 @@ public class BreadcrumbPanel extends JPanel {
 
         setPreferredSize(GlobalFrame.breadcrumb);
         setLayout(new FlowLayout(FlowLayout.LEADING));
-
+        setBorder(BorderFactory.createMatteBorder(0, 1,0, 0, new Color(0x000000)));
     }
 
     //Each Individual Path
@@ -54,6 +55,14 @@ public class BreadcrumbPanel extends JPanel {
                         //Re-Render DOM
                         GlobalFrame.general.render();
                     }
+                }
+                @Override
+                public void mouseEntered(MouseEvent event){
+                    setForeground(new Color(0xFF5F48));
+                }
+                @Override
+                public void mouseExited(MouseEvent event){
+                    setForeground(new Color(000));
                 }
             });
         }

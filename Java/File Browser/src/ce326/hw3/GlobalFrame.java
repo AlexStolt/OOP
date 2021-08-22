@@ -15,10 +15,11 @@ public class GlobalFrame extends JFrame {
     static FavouritesContainerPanel favourites;
     static GeneralContainerPanel general;
     static String path = System.getProperty("user.home");
-    static boolean hidden_content = false;
+    static String configuration = String.format(String.format("%s/.java-file-browser/properties.xml", GlobalFrame.path));
     static StringBuilder copy_path = null;
     static StringBuilder cut_path = null;
     static StringBuilder paste_path = null;
+    static boolean paste_enabled = false; //Menu Option is Enabled (if(copy_path || cut_path) -> true)
 
     //A List of Values to Easily Customize UX
     static Dimension breadcrumb = new Dimension(0, 60); //Stretches Horizontally

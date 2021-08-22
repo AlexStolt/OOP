@@ -1,9 +1,8 @@
 package ce326.hw3;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 
 public class ContentLabel extends JLabel {
@@ -36,6 +35,8 @@ public class ContentLabel extends JLabel {
             public void mouseClicked(MouseEvent event) {
                 //Left Click
                 if(event.getButton() == MouseEvent.BUTTON1){
+
+
                     if(event.getClickCount() < 2){
                         //Another Element is Already Selected
                         if(GlobalFrame.selected_label != null && GlobalFrame.selected_label != self){
@@ -44,6 +45,7 @@ public class ContentLabel extends JLabel {
 
                         //Set Component as Selected
                         GlobalFrame.selected_label = self;
+
                         setBackground(GlobalFrame.selected_background);
 
                         //Enable Edit in Menu Bar
@@ -54,19 +56,51 @@ public class ContentLabel extends JLabel {
                             //Open File
                         }
                         else {
-                            //No Components are Selected
-                            GlobalFrame.selected_label = null;
-                            setBackground(GlobalFrame.background);
+                            File directory = new File(label_path());
+                            //No Permissions
+                            if (!directory.canRead()) {
+                                //Modal Window
+                                JDialog dialog = new JDialog(FileBrowser.window, "Permission Error", true); //Title of Window
+                                JLabel title = new JLabel(String.format("Title: %s", GlobalFrame.selected_label.getText())); //Name of File or Directory
+                                JLabel path = new JLabel(String.format("Path: %s", GlobalFrame.selected_label.label_path()));
+                                JLabel error = new JLabel(String.format("[Error]: No Read Permission"));
+                                JButton close = new JButton("OK");
 
-                            //Disable Edit in Menu Bar
-                            MenuBar.disable_edit();
+                                //Close Modal Window
+                                close.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
+                                    }
+                                });
 
+                                //Layout
+                                dialog.setLayout(new GridLayout(4, 1));
+                                dialog.add(title);
+                                dialog.add(path);
+                                dialog.add(error);
+                                dialog.add(close);
+
+                                dialog.setSize(new Dimension(350, 150));
+                                dialog.setVisible(true);
+
+                            }
                             //Change Directory
-                            GlobalFrame.path = GlobalFrame.path + "/" + getText();
+                            else {
+                                //Change Directory if Permissions
+                                GlobalFrame.path = label_path();
 
-                            //Re-Render DOM
-                            GlobalFrame.general.clear();
-                            GlobalFrame.general.render();
+                                //No Label is Selected
+                                GlobalFrame.selected_label = null;
+                                //No Components are Selected
+                                setBackground(GlobalFrame.background);
+                                //Disable Edit in Menu Bar
+                                MenuBar.disable_edit();
+
+                                //Re-Render DOM
+                                GlobalFrame.general.clear();
+                                GlobalFrame.general.render();
+                            }
                         }
                     }
                 }
@@ -83,6 +117,16 @@ public class ContentLabel extends JLabel {
 
                     //Enable Edit in Menu Bar
                     MenuBar.enable_edit();
+
+                    File selected = new File(label_path());
+                    if(!selected.isDirectory()){
+                        MenuContainer.disable_paste();
+                    }
+                    else {
+                        //Handle Paste Option (Disable or Enable)
+                        MenuContainer.paste_option(label_path());
+                    }
+
 
                     //Pop-Up Menu
                     MenuPopUp popup = new MenuPopUp();
@@ -111,8 +155,10 @@ public class ContentLabel extends JLabel {
                     setBackground(GlobalFrame.background);
             }
         });
-
-
-
     }
+
+    public static String label_path(){
+        return String.format("%s/%s", GlobalFrame.path, GlobalFrame.selected_label.getText());
+    }
+
 }
