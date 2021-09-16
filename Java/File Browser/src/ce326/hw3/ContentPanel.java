@@ -10,9 +10,12 @@ import java.io.File;
 
 public class ContentPanel extends JPanel {
     ContentPanel self = this;
-    public ContentPanel(){
+    public ContentPanel(boolean search){
         setBackground(GlobalFrame.background);
-        render_labels();
+        if(!search)
+            render_labels();
+        else
+            render_search_labels();
     }
 
     JScrollPane render_panel(){
@@ -24,6 +27,54 @@ public class ContentPanel extends JPanel {
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         return scroll;
+    }
+
+    void render_search_labels(){
+        setLayout(new GridLayout(SearchBarPanel.files_found.size(), 1));
+        ImageIcon icon;
+        for(File file : SearchBarPanel.files_found){
+            icon = image_selector(file); //Select the Icon to Use
+
+            add(new SearchLabel(file, icon));
+        }
+    }
+
+    //Select the Type of Image
+    ImageIcon image_selector(File file){
+        ImageIcon icon;
+        if(file.isDirectory()){
+            return new ImageIcon("src/icons/folder.png");
+        }
+        switch (file_extension(file)) {
+            case "audio" -> icon = new ImageIcon("src/icons/audio.png");
+            case "bmp" -> icon = new ImageIcon("src/icons/bmp.png");
+            case "doc" -> icon = new ImageIcon("src/icons/doc.png");
+            case "docx" -> icon = new ImageIcon("src/icons/docx.png");
+            case "giff" -> icon = new ImageIcon("src/icons/giff.png");
+            case "gz" -> icon = new ImageIcon("src/icons/gz.png");
+            case "htm" -> icon = new ImageIcon("src/icons/htm.png");
+            case "html" -> icon = new ImageIcon("src/icons/html.png");
+            case "image" -> icon = new ImageIcon("src/icons/image.png");
+            case "jpeg" -> icon = new ImageIcon("src/icons/jpeg.png");
+            case "jpg" -> icon = new ImageIcon("src/icons/jpg.png");
+            case "mp3" -> icon = new ImageIcon("src/icons/mp3.png");
+            case "ods" -> icon = new ImageIcon("src/icons/ods.png");
+            case "odt" -> icon = new ImageIcon("src/icons/odt.png");
+            case "ogg" -> icon = new ImageIcon("src/icons/ogg.png");
+            case "pdf" -> icon = new ImageIcon("src/icons/pdf.png");
+            case "png" -> icon = new ImageIcon("src/icons/png.png");
+            case "tar" -> icon = new ImageIcon("src/icons/tar.png");
+            case "tgz" -> icon = new ImageIcon("src/icons/tgz.png");
+            case "txt" -> icon = new ImageIcon("src/icons/txt.png");
+            case "video" -> icon = new ImageIcon("src/icons/video.png");
+            case "wav" -> icon = new ImageIcon("src/icons/wav.png");
+            case "xlsx" -> icon = new ImageIcon("src/icons/xlsx.png");
+            case "xlx" -> icon = new ImageIcon("src/icons/xlx.png");
+            case "xml" -> icon = new ImageIcon("src/icons/xml.png");
+            case "zip" -> icon = new ImageIcon("src/icons/zip.png");
+            default -> icon = new ImageIcon("src/icons/question.png");
+        }
+        return icon;
     }
 
     void render_labels(){
@@ -52,35 +103,7 @@ public class ContentPanel extends JPanel {
 
         //JLabels for Files
         for(File file : files){
-            switch (file_extension(file)) {
-                case "audio" -> icon = new ImageIcon("src/icons/audio.png");
-                case "bmp" -> icon = new ImageIcon("src/icons/bmp.png");
-                case "doc" -> icon = new ImageIcon("src/icons/doc.png");
-                case "docx" -> icon = new ImageIcon("src/icons/docx.png");
-                case "giff" -> icon = new ImageIcon("src/icons/giff.png");
-                case "gz" -> icon = new ImageIcon("src/icons/gz.png");
-                case "htm" -> icon = new ImageIcon("src/icons/htm.png");
-                case "html" -> icon = new ImageIcon("src/icons/html.png");
-                case "image" -> icon = new ImageIcon("src/icons/image.png");
-                case "jpeg" -> icon = new ImageIcon("src/icons/jpeg.png");
-                case "jpg" -> icon = new ImageIcon("src/icons/jpg.png");
-                case "mp3" -> icon = new ImageIcon("src/icons/mp3.png");
-                case "ods" -> icon = new ImageIcon("src/icons/ods.png");
-                case "odt" -> icon = new ImageIcon("src/icons/odt.png");
-                case "ogg" -> icon = new ImageIcon("src/icons/ogg.png");
-                case "pdf" -> icon = new ImageIcon("src/icons/pdf.png");
-                case "png" -> icon = new ImageIcon("src/icons/png.png");
-                case "tar" -> icon = new ImageIcon("src/icons/tar.png");
-                case "tgz" -> icon = new ImageIcon("src/icons/tgz.png");
-                case "txt" -> icon = new ImageIcon("src/icons/txt.png");
-                case "video" -> icon = new ImageIcon("src/icons/video.png");
-                case "wav" -> icon = new ImageIcon("src/icons/wav.png");
-                case "xlsx" -> icon = new ImageIcon("src/icons/xlsx.png");
-                case "xlx" -> icon = new ImageIcon("src/icons/xlx.png");
-                case "xml" -> icon = new ImageIcon("src/icons/xml.png");
-                case "zip" -> icon = new ImageIcon("src/icons/zip.png");
-                default -> icon = new ImageIcon("src/icons/question.png");
-            }
+            icon = image_selector(file); //Select the Icon to Use
 
             //Create a Label and Render on "DOM"
             add(new ContentLabel(file, icon, false));

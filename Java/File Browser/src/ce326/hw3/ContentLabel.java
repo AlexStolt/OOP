@@ -52,8 +52,31 @@ public class ContentLabel extends JLabel {
                         MenuBar.enable_edit();
                     }
                     else {
+                        //Open File
                         if (!self.directory){
-                            //Open File
+                            File file = new File(label_path());
+                            //File is Executable
+                            if(file.canExecute()){
+                                //Run without Parameters
+                                try {
+                                    Runtime.getRuntime().exec(file.getPath(), null, file.getParentFile());
+
+                                    //Re-Render DOM
+                                    GlobalFrame.general.clear();
+                                    GlobalFrame.general.render();
+                                } catch (Exception exception){
+                                    System.out.printf("[Error]: Executing %s%n", file.getName());
+                                }
+                            }
+                            //File Opened with its Default Program
+                            else {
+                                try {
+                                    Desktop.getDesktop().open(file);
+                                }
+                                catch (Exception exception){
+                                    System.out.printf("[Error]: Opening %s%n", file.getName());
+                                }
+                            }
                         }
                         else {
                             File directory = new File(label_path());
@@ -63,7 +86,7 @@ public class ContentLabel extends JLabel {
                                 JDialog dialog = new JDialog(FileBrowser.window, "Permission Error", true); //Title of Window
                                 JLabel title = new JLabel(String.format("Title: %s", GlobalFrame.selected_label.getText())); //Name of File or Directory
                                 JLabel path = new JLabel(String.format("Path: %s", GlobalFrame.selected_label.label_path()));
-                                JLabel error = new JLabel(String.format("[Error]: No Read Permission"));
+                                JLabel error = new JLabel("[Error]: No Read Permission");
                                 JButton close = new JButton("OK");
 
                                 //Close Modal Window
@@ -87,6 +110,7 @@ public class ContentLabel extends JLabel {
                             }
                             //Change Directory
                             else {
+                                GlobalFrame.selected_label = self;
                                 //Change Directory if Permissions
                                 GlobalFrame.path = label_path();
 

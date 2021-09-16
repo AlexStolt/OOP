@@ -123,15 +123,16 @@ public class FileUtils {
             parent.mkdirs();
     }
 
-    static void deleteFolder(File file){
-        for (File subFile : file.listFiles()) {
-            if(subFile.isDirectory()) {
-                deleteFolder(subFile);
-            } else {
-                subFile.delete();
+    static void delete_folder(File file){
+        if(file.isDirectory()) {
+            for (File sub_file : file.listFiles()) {
+                if (sub_file.isDirectory()) {
+                    delete_folder(sub_file);
+                } else {
+                    sub_file.delete();
+                }
             }
         }
         file.delete();
     }
-
 }

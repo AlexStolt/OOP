@@ -77,7 +77,7 @@ public class MenuContainer {
 
     //Edit Sub-Menu
     static ArrayList<JMenuItem> edit_items(){
-        ArrayList<JMenuItem> edit_menu_items = new ArrayList<JMenuItem>();
+        ArrayList<JMenuItem> edit_menu_items = new ArrayList<>();
 
         edit_menu_items.add(new JMenuItem("Cut"));
         edit_menu_items.add(new JMenuItem("Copy"));
@@ -132,6 +132,12 @@ public class MenuContainer {
                             try {
                                 FileUtils.copy_file_or_directory(source, destination);
 
+                                //Delete Source (CUT)
+                                if(GlobalFrame.cut_path != null)
+                                    FileUtils.delete_folder(new File(GlobalFrame.cut_path.toString()));
+
+
+                                //Refresh DOM
                                 GlobalFrame.general.clear();
                                 GlobalFrame.general.render();
 
@@ -192,7 +198,7 @@ public class MenuContainer {
                         JLabel path = new JLabel(String.format("Path: %s", GlobalFrame.selected_label.label_path()));
 
                         File selected_label = new File(GlobalFrame.selected_label.label_path());
-                        JLabel size = new JLabel(String.format("Size: %d Bytes", file_size(selected_label)));
+                        JLabel size = new JLabel(String.format("Size: %d Bytes", file_size(selected_label))); //Get Size of Files HERE
 
                         JButton close = new JButton("OK");
 
@@ -216,33 +222,77 @@ public class MenuContainer {
                     }
                     else if(i.getText().equals("Add to Favourites")){
                         try {
-                            //Append Entry to Favourites
-                            File xmlFile = new File(GlobalFrame.configuration);
+                            if(new File(ContentLabel.label_path()).isDirectory()) {
+                                //Append Entry to Favourites
+                                File xml_file = new File(GlobalFrame.configuration);
 
-                            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-                            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-                            Document document = documentBuilder.parse(xmlFile);
-                            Element documentElement = document.getDocumentElement();
-                            Element textNode = document.createElement("directory");
-                            //textNode.setTextContent(ContentLabel.selectedLabel.getText());
+                                DocumentBuilderFactory document_builder_factory = DocumentBuilderFactory.newInstance();
+                                DocumentBuilder documentBuilder = document_builder_factory.newDocumentBuilder();
+                                Document document = documentBuilder.parse(xml_file);
+                                Element document_element = document.getDocumentElement();
+                                Element text_node = document.createElement("directory");
+                                //textNode.setTextContent(ContentLabel.selectedLabel.getText());
 
-                            textNode.setAttribute("name", GlobalFrame.selected_label.getText());
-                            textNode.setAttribute("path", GlobalFrame.selected_label.label_path());
+                                text_node.setAttribute("name", GlobalFrame.selected_label.getText());
+                                text_node.setAttribute("path", GlobalFrame.selected_label.label_path());
 
-                            documentElement.appendChild(textNode);
-                            document.replaceChild(documentElement, documentElement);
-                            Transformer tFormer = TransformerFactory.newInstance().newTransformer();
-                            tFormer.setOutputProperty(OutputKeys.METHOD, "xml");
-                            Source source = new DOMSource(document);
-                            Result result = new StreamResult(xmlFile);
-                            tFormer.transform(source, result);
+                                document_element.appendChild(text_node);
+                                document.replaceChild(document_element, document_element);
+                                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+                                Source source = new DOMSource(document);
+                                Result result = new StreamResult(xml_file);
+                                transformer.transform(source, result);
 
-                            //Refresh Favourites Panel
-                            GlobalFrame.favourites.refresh();
-
+                                //Refresh Favourites Panel
+                                GlobalFrame.favourites.refresh();
+                            }
                         } catch (Exception exception) {
                             System.out.println(exception);
                         }
+                    }
+                    else if(i.getText().equals("Delete")){
+                        Dialog dialog = new JDialog(FileBrowser.window, "Delete Directory/File", true); //Title of Window
+                        JLabel title = new JLabel(String.format("Delete this Directory/File: %s", GlobalFrame.selected_label.getText())); //Name of File or Directory
+                        JButton accept = new JButton("Delete");
+                        JButton cancel = new JButton("Cancel");
+
+                        accept.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                //Delete File or Folder
+                                FileUtils.delete_folder(new File(ContentLabel.label_path()));
+
+
+
+                                dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
+
+                                //Refresh DOM
+                                GlobalFrame.general.clear();
+                                GlobalFrame.general.render();
+                            }
+                        });
+
+
+                        //Close Modal Window
+                        cancel.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                dialog.dispatchEvent(new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING));
+                            }
+                        });
+
+
+                        //Layout
+                        dialog.setLayout(new GridLayout(3, 1));
+                        dialog.add(title);
+                        dialog.add(accept);
+                        dialog.add(cancel);
+
+                        dialog.setSize(new Dimension(350, 150));
+                        dialog.setVisible(true);
+
+
                     }
                 }
             });
@@ -314,7 +364,7 @@ public class MenuContainer {
     //Get File or Directory Size in Bytes
     static long file_size(File file_or_directory){
         long length = 0;
-        if(file_or_directory.isDirectory()) {
+        if(file_or_directory.isDirectory() && file_or_directory.canRead()) {
             for (File file : file_or_directory.listFiles()) {
                 if (file.isFile())
                     length += file.length();
